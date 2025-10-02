@@ -249,6 +249,7 @@ export interface AgentResponse {
     tokensUsed?: number
     duration?: number
     finalQuality?: number
+    agentsUsed?: string[]
   }
   error?: string
   userCancelled?: boolean

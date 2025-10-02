@@ -298,7 +298,7 @@ export class IterationManager {
   /**
    * Get current cycle
    */
-  private getCurrentCycle(): IterationCycle | undefined {
+  getCurrentCycle(): IterationCycle | undefined {
     return this.state.cycles[this.state.cycles.length - 1]
   }
 

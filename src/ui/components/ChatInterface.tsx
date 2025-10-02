@@ -26,6 +26,15 @@ export interface ChatInterfaceProps {
   isProcessing: boolean
   iterationState?: IterationState
   currentPattern?: string
+  activeAgents?: AgentActivity[]
+}
+
+export interface AgentActivity {
+  id: string
+  specialty: string
+  status: 'active' | 'waiting' | 'completed'
+  tokensUsed: number
+  currentTask?: string
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({
@@ -34,6 +43,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   isProcessing,
   iterationState,
   currentPattern,
+  activeAgents,
 }) => {
   const [input, setInput] = useState('')
   const { exit } = useApp()
@@ -78,6 +88,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       {/* Iteration Progress */}
       {isProcessing && iterationState && (
         <IterationProgress state={iterationState} pattern={currentPattern} />
+      )}
+
+      {/* Active Agents - Multi-Agent Mode */}
+      {isProcessing && activeAgents && activeAgents.length > 0 && (
+        <ActiveAgentsPanel agents={activeAgents} />
       )}
 
       {/* Input */}
@@ -245,5 +260,71 @@ const ProgressBar: React.FC<{ progress: number; width?: number }> = ({
       <Text color="green">{'█'.repeat(filled)}</Text>
       <Text color="gray">{'░'.repeat(empty)}</Text>
     </Text>
+  )
+}
+
+const ActiveAgentsPanel: React.FC<{ agents: AgentActivity[] }> = ({ agents }) => {
+  const totalTokens = agents.reduce((sum, agent) => sum + agent.tokensUsed, 0)
+
+  return (
+    <Box
+      borderStyle="double"
+      borderColor="magenta"
+      padding={1}
+      marginBottom={1}
+      flexDirection="column"
+    >
+      <Box marginBottom={1}>
+        <Text bold color="magenta">
+          🤝 Multi-Agent Collaboration
+        </Text>
+        <Text dimColor>
+          {' • '}{agents.filter(a => a.status === 'active').length} active
+          {' • '}{totalTokens} tokens total
+        </Text>
+      </Box>
+
+      <Box flexDirection="column" paddingLeft={2}>
+        {agents.map((agent, idx) => (
+          <AgentCard key={idx} agent={agent} />
+        ))}
+      </Box>
+    </Box>
+  )
+}
+
+const AgentCard: React.FC<{ agent: AgentActivity }> = ({ agent }) => {
+  const statusIcons = {
+    active: '🟢',
+    waiting: '🟡',
+    completed: '✅',
+  }
+
+  const statusColors = {
+    active: 'green',
+    waiting: 'yellow',
+    completed: 'blue',
+  }
+
+  return (
+    <Box marginY={0} flexDirection="column">
+      <Box>
+        <Text>
+          {statusIcons[agent.status]}{' '}
+          <Text bold color={statusColors[agent.status]}>
+            {agent.specialty.toUpperCase()}
+          </Text>
+          <Text dimColor> ({agent.id.split('-')[0]})</Text>
+        </Text>
+      </Box>
+      <Box paddingLeft={3} flexDirection="column">
+        {agent.currentTask && (
+          <Text dimColor>Task: {agent.currentTask}</Text>
+        )}
+        <Text dimColor>
+          Tokens: <Text color="cyan">{agent.tokensUsed}</Text>
+        </Text>
+      </Box>
+    </Box>
   )
 }

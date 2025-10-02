@@ -8,7 +8,7 @@ import React, { useState, useEffect } from 'react'
 import { render } from 'ink'
 import { Command } from 'commander'
 import dotenv from 'dotenv'
-import { ChatInterface, Message } from './ui/components/ChatInterface.js'
+import { ChatInterface, Message, AgentActivity } from './ui/components/ChatInterface.js'
 import { RouterAgentV2 } from './agents/index.js'
 import { LLMManager } from './llm/index.js'
 import { PermissionManager } from './security/index.js'
@@ -31,6 +31,7 @@ const App: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false)
   const [iterationState, setIterationState] = useState<IterationState>()
   const [currentPattern, setCurrentPattern] = useState<string>()
+  const [activeAgents, setActiveAgents] = useState<AgentActivity[]>([])
 
   // Initialize services
   const [services] = useState(() => initializeServices())
@@ -85,7 +86,8 @@ I can help you with:
         services.router,
         content,
         (state) => setIterationState(state),
-        (pattern) => setCurrentPattern(pattern)
+        (pattern) => setCurrentPattern(pattern),
+        (agents) => setActiveAgents(agents)
       )
 
       const assistantMessage: Message = {
@@ -114,6 +116,7 @@ I can help you with:
       setIsProcessing(false)
       setIterationState(undefined)
       setCurrentPattern(undefined)
+      setActiveAgents([])
     }
   }
 
@@ -124,6 +127,7 @@ I can help you with:
       isProcessing={isProcessing}
       iterationState={iterationState}
       currentPattern={currentPattern}
+      activeAgents={activeAgents}
     />
   )
 }
@@ -136,16 +140,19 @@ function initializeServices() {
   }
 
   const llmManager = new LLMManager()
-  const permissionManager = new PermissionManager((request) =>
-    Promise.resolve({ granted: true, scope: 'session' as const })
-  )
+  const permissionManager = new PermissionManager()
+
+  // Set UI callback for permission prompts (auto-approve in CLI mode)
+  permissionManager.setUICallback(async (request: any) => {
+    return { granted: true, scope: 'session' as const }
+  })
 
   const router = new RouterAgentV2(llmManager, permissionManager, apiKey)
 
   // Register tools
-  const shellTool = new ShellTool(permissionManager)
-  const contextTool = new ContextTool(permissionManager)
-  const webSearchTool = new WebSearchTool(permissionManager)
+  const shellTool = new ShellTool(permissionManager, 'cli-agent')
+  const contextTool = new ContextTool(permissionManager, 'cli-agent')
+  const webSearchTool = new WebSearchTool(permissionManager, 'cli-agent')
 
   router.registerTool(shellTool)
   router.registerTool(contextTool)
@@ -158,7 +165,8 @@ async function processWithIterationTracking(
   router: RouterAgentV2,
   task: string,
   onProgress: (state: IterationState) => void,
-  onPatternChange: (pattern: string) => void
+  onPatternChange: (pattern: string) => void,
+  onAgentUpdate: (agents: AgentActivity[]) => void
 ): Promise<any> {
   const iterationManager = new IterationManager({
     maxIterations: 5,
@@ -169,6 +177,16 @@ async function processWithIterationTracking(
   })
 
   iterationManager.onProgress(onProgress)
+
+  // Set iteration manager for router (for multi-agent coordination)
+  router.setIterationManager(iterationManager)
+
+  // Set up multi-agent callback (via router's coordinator)
+  // Note: This is a simplified approach - in production you'd want a cleaner API
+  const multiAgentCoordinator = (router as any).multiAgentCoordinator
+  if (multiAgentCoordinator) {
+    multiAgentCoordinator.setAgentUpdateCallback(onAgentUpdate)
+  }
 
   // Start first cycle
   const cycle = iterationManager.startCycle()

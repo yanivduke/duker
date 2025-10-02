@@ -15,6 +15,7 @@ import { ReflectionAgent } from './reflection-agent.js'
 import { ReflectionAgentV2 } from './reflection-agent-v2.js'
 import { ToolUseAgent } from './tool-use-agent.js'
 import { PlanningAgent } from './planning-agent.js'
+import { MultiAgentCoordinator } from './multi-agent/index.js'
 
 export class RouterAgentV2 {
   private llmManager: LLMManager
@@ -26,6 +27,7 @@ export class RouterAgentV2 {
   private reflectionAgentV2: ReflectionAgentV2
   private toolUseAgent: ToolUseAgent
   private planningAgent: PlanningAgent
+  private multiAgentCoordinator: MultiAgentCoordinator
   private apiKey: string
 
   constructor(
@@ -47,6 +49,7 @@ export class RouterAgentV2 {
     })
     this.toolUseAgent = new ToolUseAgent(llmManager, apiKey)
     this.planningAgent = new PlanningAgent(llmManager)
+    this.multiAgentCoordinator = new MultiAgentCoordinator(llmManager)
   }
 
   /**
@@ -163,6 +166,17 @@ export class RouterAgentV2 {
    * Select appropriate pattern based on analysis
    */
   private selectPattern(analysis: TaskAnalysis): AgenticPattern {
+    // Multi-specialist tasks → Multi-Agent
+    // Use when task requires multiple perspectives (security, performance, testing)
+    if (
+      analysis.complexity === 'complex' &&
+      (analysis.type === 'code-analysis' ||
+        analysis.type === 'code-generation' ||
+        /review|audit|analyze multiple|comprehensive/.test(analysis.toString()))
+    ) {
+      return 'multi-agent'
+    }
+
     // Complex multi-step tasks → Planning
     if (analysis.complexity === 'complex' || analysis.type === 'multi-step') {
       return 'planning'
@@ -196,6 +210,10 @@ export class RouterAgentV2 {
     analysis: TaskAnalysis
   ): Promise<AgentResponse> {
     switch (pattern) {
+      case 'multi-agent':
+        console.log('[Router] Using Multi-Agent Coordination')
+        return await this.multiAgentCoordinator.execute(input)
+
       case 'reflection':
         // Use V2 for code-related tasks, V1 for others
         if (
@@ -262,6 +280,13 @@ When writing code, follow best practices and include comments.`,
    * Get available patterns
    */
   getAvailablePatterns(): AgenticPattern[] {
-    return ['direct', 'reflection', 'tool-use', 'planning']
+    return ['direct', 'reflection', 'tool-use', 'planning', 'multi-agent']
+  }
+
+  /**
+   * Set iteration manager for multi-agent coordinator
+   */
+  setIterationManager(iterationManager: any): void {
+    this.multiAgentCoordinator.setIterationManager(iterationManager)
   }
 }
