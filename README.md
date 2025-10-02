@@ -1,17 +1,29 @@
 # Duker 🤖
 
-**Version 0.2.0** - Phase 2 Complete
+**Version 0.3.0** - Smart Iteration & Terminal UI
 
-A terminal-based AI coding assistant built with agentic patterns, designed for secure and intelligent code assistance.
+A terminal-based AI coding assistant with smart iteration management and interactive UI, designed for secure and intelligent code assistance.
 
-> **Latest Updates (v0.2.0)**: Added Reflection, Planning, and enhanced Tool Use patterns. Upgraded to Vercel AI SDK v5. New CLI v2 with pattern visualization. See [CHANGELOG.md](./CHANGELOG.md) for details.
+> **Latest Updates (v0.3.0 - Phase 3)**:
+> - 🔄 **Smart Iteration Manager**: Prevents endless loops with 6 stop conditions
+> - 💬 **Interactive Terminal UI**: React/Ink-powered chat interface
+> - 📊 **Real-time Progress**: Live visualization of agent steps
+> - ⚡ **Loop Prevention**: Automatic stall detection and token budgets
+> - 🎨 **Beautiful UX**: Progress bars, spinners, and color-coded status
+>
+> See [PHASE3_SUMMARY.md](./PHASE3_SUMMARY.md) for Phase 3 details.
+> Previous: [docs/REFLECTION_V2.md](./docs/REFLECTION_V2.md) for Phase 2.1 details.
 
 ## Features
 
 - **🔒 Security First**: Permission-based system for all operations (Allow Once/Session/Always/Reject)
-- **🧠 Agentic Patterns**: Intelligent routing through Reflection, Tool Use, Planning, and Multi-Agent patterns
+- **🧠 Agentic Patterns**: Intelligent routing through Reflection V2, Tool Use, Planning, and Multi-Agent patterns
+- **🎯 Advanced Code Generation**: 10-dimensional quality analysis (correctness, security, maintainability, testability, etc.)
+- **🧪 Auto Test Generation**: Comprehensive test suites with edge cases and error scenarios
+- **📚 Smart Documentation**: Automatic function docs, usage examples, and API documentation
+- **🔍 Code Analysis**: Language-specific best practices, code smell detection, refactoring suggestions
 - **🤖 Multi-LLM Support**: Powered by Vercel AI SDK (Anthropic Claude, OpenAI GPT, Google Gemini)
-- **🛠️ MCP Tools**: Shell execution, file operations, codebase analysis
+- **🛠️ MCP Tools**: Shell execution, file operations, web search, codebase analysis
 - **📊 Audit Logging**: Complete logging of all operations and permissions
 - **⚡ TypeScript**: Fully typed with strict TypeScript
 

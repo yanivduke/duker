@@ -12,6 +12,7 @@ import {
 import { LLMManager } from '../llm/index.js'
 import { PermissionManager } from '../security/index.js'
 import { ReflectionAgent } from './reflection-agent.js'
+import { ReflectionAgentV2 } from './reflection-agent-v2.js'
 import { ToolUseAgent } from './tool-use-agent.js'
 import { PlanningAgent } from './planning-agent.js'
 
@@ -22,6 +23,7 @@ export class RouterAgentV2 {
 
   // Specialized agents
   private reflectionAgent: ReflectionAgent
+  private reflectionAgentV2: ReflectionAgentV2
   private toolUseAgent: ToolUseAgent
   private planningAgent: PlanningAgent
   private apiKey: string
@@ -37,6 +39,12 @@ export class RouterAgentV2 {
 
     // Initialize specialized agents
     this.reflectionAgent = new ReflectionAgent(llmManager)
+    this.reflectionAgentV2 = new ReflectionAgentV2(llmManager, {
+      strictMode: true,
+      generateTests: true,
+      generateDocs: true,
+      qualityThreshold: 0.90,
+    })
     this.toolUseAgent = new ToolUseAgent(llmManager, apiKey)
     this.planningAgent = new PlanningAgent(llmManager)
   }
@@ -165,10 +173,12 @@ export class RouterAgentV2 {
       return 'tool-use'
     }
 
-    // Quality-critical tasks → Reflection
+    // Production code generation → Reflection V2
+    // Use advanced reflection for any code generation task
     if (
-      analysis.type === 'code-generation' &&
-      analysis.complexity === 'moderate'
+      analysis.type === 'code-generation' ||
+      analysis.type === 'refactoring' ||
+      analysis.type === 'debugging'
     ) {
       return 'reflection'
     }
@@ -187,6 +197,15 @@ export class RouterAgentV2 {
   ): Promise<AgentResponse> {
     switch (pattern) {
       case 'reflection':
+        // Use V2 for code-related tasks, V1 for others
+        if (
+          analysis.type === 'code-generation' ||
+          analysis.type === 'refactoring' ||
+          analysis.type === 'debugging'
+        ) {
+          console.log('[Router] Using Reflection V2 (Advanced Code Generation)')
+          return await this.reflectionAgentV2.execute(input)
+        }
         return await this.reflectionAgent.execute(input)
 
       case 'tool-use':

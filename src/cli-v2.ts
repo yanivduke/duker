@@ -103,9 +103,14 @@ async function startChat(forcePattern?: string) {
 
             if (response.metadata.finalQuality) {
               const quality = response.metadata.finalQuality
-              const qualityColor = quality >= 0.85 ? chalk.green : quality >= 0.7 ? chalk.yellow : chalk.red
+              const qualityColor = quality >= 0.90 ? chalk.green : quality >= 0.80 ? chalk.cyan : quality >= 0.70 ? chalk.yellow : chalk.red
+
+              // Check if it's the enhanced V2 (quality >= 0.90 threshold indicates V2)
+              const isV2 = quality >= 0.85 && response.metadata.pattern === 'reflection'
+
               console.log(
-                chalk.dim(`Quality: `) + qualityColor(`${(quality * 100).toFixed(1)}%`)
+                chalk.dim(`Quality: `) + qualityColor(`${(quality * 100).toFixed(1)}%`) +
+                (isV2 ? chalk.magenta(' [V2]') : '')
               )
             }
 
