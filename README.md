@@ -1,6 +1,10 @@
 # Duker 🤖
 
+**Version 0.2.0** - Phase 2 Complete
+
 A terminal-based AI coding assistant built with agentic patterns, designed for secure and intelligent code assistance.
+
+> **Latest Updates (v0.2.0)**: Added Reflection, Planning, and enhanced Tool Use patterns. Upgraded to Vercel AI SDK v5. New CLI v2 with pattern visualization. See [CHANGELOG.md](./CHANGELOG.md) for details.
 
 ## Features
 
@@ -137,28 +141,36 @@ User Input → Router Agent → Security Layer → Pattern Selection → Special
 ```
 duker/
 ├── src/
-│   ├── agents/           # Agent implementations
-│   │   └── router-agent.ts
-│   ├── security/         # Security layer
+│   ├── agents/                   # Agent implementations
+│   │   ├── router-agent.ts       # Phase 1 router
+│   │   ├── router-agent-v2.ts    # Phase 2 enhanced router
+│   │   ├── reflection-agent.ts   # Self-evaluation pattern
+│   │   ├── tool-use-agent.ts     # Function calling pattern
+│   │   └── planning-agent.ts     # Task decomposition pattern
+│   ├── security/                 # Security layer
 │   │   ├── permission-manager.ts
 │   │   ├── permission-store.ts
 │   │   ├── audit-logger.ts
 │   │   └── risk-assessment.ts
-│   ├── llm/             # LLM providers
+│   ├── llm/                      # LLM providers
 │   │   ├── llm-manager.ts
 │   │   └── providers/
 │   │       └── anthropic-provider.ts
-│   ├── mcp/             # MCP tools
+│   ├── mcp/                      # MCP tools
 │   │   ├── shell-tool.ts
-│   │   └── context-tool.ts
-│   ├── types/           # TypeScript types
+│   │   ├── context-tool.ts
+│   │   └── web-search-tool.ts    # Tavily search
+│   ├── types/                    # TypeScript types
 │   │   └── index.ts
-│   └── cli.ts           # CLI entry point
-├── docs/                # Documentation
-│   └── specs/          # Detailed specifications
-├── .duker/             # User data (created at runtime)
-│   ├── permissions.json # Saved permissions
-│   └── audit.log       # Security audit log
+│   ├── cli.ts                    # CLI v1 entry point
+│   └── cli-v2.ts                 # CLI v2 entry point (enhanced)
+├── docs/                         # Documentation
+│   └── specs/                    # Detailed specifications
+├── .duker/                       # User data (created at runtime)
+│   ├── permissions.json          # Saved permissions
+│   └── audit.log                 # Security audit log
+├── CLAUDE.md                     # Architecture guide
+├── CHANGELOG.md                  # Version history
 └── package.json
 ```
 
@@ -195,6 +207,7 @@ npm test
 - `ANTHROPIC_API_KEY`: Your Anthropic API key (required)
 - `OPENAI_API_KEY`: Your OpenAI API key (optional)
 - `GOOGLE_API_KEY`: Your Google API key (optional)
+- `TAVILY_API_KEY`: Your Tavily API key for web search (optional)
 - `DUKER_DEFAULT_PROVIDER`: Default LLM provider (default: 'anthropic')
 - `DUKER_DEFAULT_MODEL`: Default model (default: 'claude-3-5-sonnet-20241022')
 - `DEBUG`: Enable debug logging (default: false)
@@ -237,11 +250,13 @@ Detailed specifications are available in the `docs/specs/` directory:
 - [x] Core MCP Tools (Shell, Context)
 - [x] CLI interface
 
-### Phase 2: Core Patterns (In Progress)
-- [ ] Reflection Pattern implementation
-- [ ] Enhanced Tool Use with function calling
-- [ ] Planning Pattern with task decomposition
-- [ ] Web Search and RAG tools
+### Phase 2: Core Patterns ✅
+- [x] Reflection Pattern implementation with quality scoring
+- [x] Enhanced Tool Use with AI SDK v5 function calling
+- [x] Planning Pattern with task decomposition
+- [x] Web Search tool (Tavily integration)
+- [x] Enhanced CLI v2 with pattern visualization
+- [ ] RAG tool with vector database
 - [ ] Streaming responses in UI
 
 ### Phase 3: Advanced Features

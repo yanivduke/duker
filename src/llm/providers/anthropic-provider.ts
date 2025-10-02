@@ -2,7 +2,7 @@
  * Anthropic Claude Provider
  */
 
-import { anthropic } from '@ai-sdk/anthropic'
+import { createAnthropic } from '@ai-sdk/anthropic'
 import { generateText, streamText } from 'ai'
 import {
   LLMProvider,
@@ -45,39 +45,37 @@ export class AnthropicProvider implements LLMProvider {
   }
 
   async generate(request: GenerateRequest): Promise<GenerateResponse> {
-    const model = anthropic(request.model || this.defaultModel, {
-      apiKey: this.apiKey,
-    })
+    const anthropic = createAnthropic({ apiKey: this.apiKey })
+    const model = anthropic(request.model || this.defaultModel)
 
     const result = await generateText({
       model,
       messages: request.messages,
       temperature: request.temperature ?? 0.7,
-      maxTokens: request.maxTokens ?? 4096,
+      maxOutputTokens: request.maxTokens ?? 4096,
       topP: request.topP,
     })
 
     return {
       text: result.text,
       usage: {
-        promptTokens: result.usage.promptTokens,
-        completionTokens: result.usage.completionTokens,
-        totalTokens: result.usage.totalTokens,
+        promptTokens: result.usage.inputTokens ?? 0,
+        completionTokens: result.usage.outputTokens ?? 0,
+        totalTokens: result.usage.totalTokens ?? 0,
       },
       finishReason: this.mapFinishReason(result.finishReason),
     }
   }
 
   async *stream(request: GenerateRequest): AsyncIterable<StreamChunk> {
-    const model = anthropic(request.model || this.defaultModel, {
-      apiKey: this.apiKey,
-    })
+    const anthropic = createAnthropic({ apiKey: this.apiKey })
+    const model = anthropic(request.model || this.defaultModel)
 
     const result = streamText({
       model,
       messages: request.messages,
       temperature: request.temperature ?? 0.7,
-      maxTokens: request.maxTokens ?? 4096,
+      maxOutputTokens: request.maxTokens ?? 4096,
     })
 
     for await (const chunk of result.textStream) {

@@ -4,3 +4,4 @@
 
 export { ShellTool } from './shell-tool.js'
 export { ContextTool } from './context-tool.js'
+export { WebSearchTool } from './web-search-tool.js'
