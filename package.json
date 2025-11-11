@@ -16,7 +16,9 @@
     "start": "node dist/cli-v3.js",
     "test": "vitest",
     "lint": "eslint src --ext .ts,.tsx",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "load-knowledge": "tsx scripts/load-knowledge.ts",
+    "setup": "npm install && npm run load-knowledge"
   },
   "keywords": [
     "ai",
@@ -32,6 +34,9 @@
     "@ai-sdk/anthropic": "^2.0.23",
     "@ai-sdk/openai": "^2.0.42",
     "@ai-sdk/google": "^2.0.17",
+    "ollama-ai-provider": "^0.15.2",
+    "chromadb": "^1.8.1",
+    "simple-git": "^3.25.0",
     "react": "^18.2.0",
     "ink": "^5.0.1",
     "ink-spinner": "^5.0.0",
@@ -41,7 +46,8 @@
     "commander": "^12.0.0",
     "zod": "^3.22.4",
     "dotenv": "^16.4.5",
-    "glob": "^10.3.10"
+    "glob": "^10.3.10",
+    "@types/node-fetch": "^2.6.11"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
