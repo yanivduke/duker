@@ -184,6 +184,11 @@ export interface GenerateResponse {
     totalTokens: number
   }
   finishReason: 'stop' | 'length' | 'content-filter' | 'error'
+  metadata?: {
+    thinkingBlocks?: Array<{ content: string; type: string }>
+    extendedThinking?: boolean
+    [key: string]: any
+  }
 }
 
 export interface StreamChunk {

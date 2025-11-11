@@ -11,6 +11,7 @@ import {
   TaskAnalysis,
   LLMError,
 } from '../types/index.js'
+import { AnthropicProvider, ExtendedThinkingConfig } from './providers/anthropic-provider.js'
 
 export interface ModelSelection {
   provider: string
@@ -21,9 +22,39 @@ export interface ModelSelection {
 export class LLMManager {
   private providers: Map<string, LLMProvider> = new Map()
   private defaultProvider: string
+  private extendedThinkingConfig?: ExtendedThinkingConfig
 
   constructor(defaultProvider = 'anthropic') {
     this.defaultProvider = defaultProvider
+  }
+
+  /**
+   * Enable extended thinking mode for Anthropic provider
+   */
+  enableExtendedThinking(config: Partial<ExtendedThinkingConfig>): void {
+    this.extendedThinkingConfig = {
+      enabled: true,
+      maxThinkingTokens: config.maxThinkingTokens,
+      thinkingBudget: config.thinkingBudget,
+    }
+
+    // Apply to existing Anthropic provider if registered
+    const anthropicProvider = this.providers.get('anthropic') as AnthropicProvider | undefined
+    if (anthropicProvider && anthropicProvider.enableExtendedThinking) {
+      anthropicProvider.enableExtendedThinking(config)
+    }
+  }
+
+  /**
+   * Disable extended thinking mode
+   */
+  disableExtendedThinking(): void {
+    this.extendedThinkingConfig = undefined
+
+    const anthropicProvider = this.providers.get('anthropic') as AnthropicProvider | undefined
+    if (anthropicProvider && anthropicProvider.disableExtendedThinking) {
+      anthropicProvider.disableExtendedThinking()
+    }
   }
 
   /**
