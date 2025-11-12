@@ -10,12 +10,10 @@ import { Command } from 'commander'
 import dotenv from 'dotenv'
 import { ChatInterface, Message, AgentActivity } from './ui/components/ChatInterface.js'
 import { RouterAgentV2 } from './agents/index.js'
-import { LLMManager } from './llm/index.js'
+import { LLMManager, AnthropicProvider } from './llm/index.js'
 import { PermissionManager } from './security/index.js'
-import { IterationManager, IterationState } from './core/iteration-manager.js'
-import { ShellTool } from './mcp/shell-tool.js'
-import { ContextTool } from './mcp/context-tool.js'
-import { WebSearchTool } from './mcp/web-search-tool.js'
+import { IterationManager, IterationState, StateManager } from './core/index.js'
+import { ShellTool, ContextTool, WebSearchTool, MemoryTool, VisionTool } from './mcp/index.js'
 import chalk from 'chalk'
 
 dotenv.config()
@@ -142,23 +140,56 @@ function initializeServices() {
   const llmManager = new LLMManager()
   const permissionManager = new PermissionManager()
 
+  // Register Anthropic provider
+  const anthropicProvider = new AnthropicProvider(apiKey)
+  llmManager.registerProvider(anthropicProvider)
+
   // Set UI callback for permission prompts (auto-approve in CLI mode)
   permissionManager.setUICallback(async (request: any) => {
     return { granted: true, scope: 'session' as const }
   })
 
+  // Initialize state manager for programmer context
+  const stateManager = new StateManager({
+    maxHistoryTurns: 50,
+    persistenceEnabled: true,
+    projectContext: {
+      name: 'duker',
+      path: process.cwd(),
+      language: ['typescript', 'javascript'],
+      frameworks: ['react', 'ink'],
+    },
+  })
+
+  // Try to load previous session
+  stateManager.load().then((loaded) => {
+    if (loaded) {
+      console.log(chalk.dim('📝 Loaded previous session state'))
+    }
+  })
+
   const router = new RouterAgentV2(llmManager, permissionManager, apiKey)
 
-  // Register tools
+  // Register all MCP tools
   const shellTool = new ShellTool(permissionManager, 'cli-agent')
   const contextTool = new ContextTool(permissionManager, 'cli-agent')
   const webSearchTool = new WebSearchTool(permissionManager, 'cli-agent')
+  const memoryTool = new MemoryTool(permissionManager, 'cli-agent', stateManager)
+  const visionTool = new VisionTool(permissionManager, 'cli-agent', apiKey)
 
   router.registerTool(shellTool)
   router.registerTool(contextTool)
   router.registerTool(webSearchTool)
+  router.registerTool(memoryTool)
+  router.registerTool(visionTool)
 
-  return { router, llmManager, permissionManager }
+  // Enable extended thinking for complex tasks
+  llmManager.enableExtendedThinking({
+    maxThinkingTokens: 10000,
+    thinkingBudget: 5000,
+  })
+
+  return { router, llmManager, permissionManager, stateManager }
 }
 
 async function processWithIterationTracking(
