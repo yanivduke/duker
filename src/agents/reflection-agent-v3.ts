@@ -11,14 +11,14 @@
  * This is the most advanced agent in Duker, capable of Claude Code-level thinking.
  */
 
-import { BaseLLMProvider } from '../llm/base-provider';
-import { ExtendedThinkingEngine, ThinkingResult } from '../core/thinking/extended-thinking-engine';
-import { ResearchOrchestrator } from '../core/thinking/research-orchestrator';
-import { ParallelThinkingEngine } from '../core/thinking/parallel-thinking-engine';
-import { WebSearchTool } from '../mcp/web-search-tool';
-import { ContextTool } from '../mcp/context-tool';
-import { AgentResponse, AgenticPattern } from '../types/agents';
-import { IterationConfig, ResearchNeed, ContextNeed, BranchStrategy } from '../core/thinking/types';
+import { BaseLLMProvider } from '../llm/base-provider.js';
+import { ExtendedThinkingEngine, ThinkingResult } from '../core/thinking/extended-thinking-engine.js';
+import { ResearchOrchestrator } from '../core/thinking/research-orchestrator.js';
+import { ParallelThinkingEngine } from '../core/thinking/parallel-thinking-engine.js';
+import { WebSearchTool } from '../mcp/web-search-tool.js';
+import { ContextTool } from '../mcp/context-tool.js';
+import { AgentResponse, AgenticPattern } from '../types/index.js';
+import { IterationConfig, ResearchNeed, ContextNeed, BranchStrategy } from '../core/thinking/types.js';
 
 export interface ReflectionAgentV3Config {
   // Thinking configuration

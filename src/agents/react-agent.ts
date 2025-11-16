@@ -6,11 +6,11 @@
  * real-time tool use and observation.
  */
 
-import { BaseLLMProvider } from '../llm/base-provider';
-import { ThinkingStepManager } from '../core/thinking/thinking-step-manager';
-import { CritiqueEngine } from '../core/thinking/critique-engine';
-import { AgentResponse, AgenticPattern } from '../types/agents';
-import { MCPTool } from '../mcp';
+import { BaseLLMProvider } from '../llm/base-provider.js';
+import { ThinkingStepManager } from '../core/thinking/thinking-step-manager.js';
+import { CritiqueEngine } from '../core/thinking/critique-engine.js';
+import { AgentResponse, AgenticPattern } from '../types/index.js';
+import { MCPTool } from '../mcp/index.js';
 
 export interface ReActStep {
   thought: string;          // Reasoning step
@@ -108,8 +108,7 @@ export class ReActAgent {
       metadata: {
         agent: 'react',
         pattern: 'tool-use' as AgenticPattern,
-        steps: this.stepCount,
-        toolsUsed: this.toolCallCount,
+        iterations: this.stepCount,
         duration,
         thinkingChain: this.thinkingManager.export(),
       },

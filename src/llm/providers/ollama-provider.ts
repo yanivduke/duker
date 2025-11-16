@@ -81,20 +81,19 @@ export class OllamaProvider implements LLMProvider {
 
     try {
       const result = await generateText({
-        model,
+        model: model as any, // Type cast for compatibility
         messages: request.messages,
         temperature: request.temperature ?? 0.3, // Lower temp for code generation
-        maxTokens: request.maxTokens ?? 2048,
+        maxOutputTokens: request.maxTokens ?? 2048,
         topP: request.topP ?? 0.9,
-      })
+      } as any)
 
       return {
         text: result.text,
         usage: {
-          promptTokens: result.usage?.promptTokens ?? 0,
-          completionTokens: result.usage?.completionTokens ?? 0,
-          totalTokens:
-            (result.usage?.promptTokens ?? 0) + (result.usage?.completionTokens ?? 0),
+          promptTokens: (result.usage as any)?.prompt ?? 0,
+          completionTokens: (result.usage as any)?.completion ?? 0,
+          totalTokens: (result.usage as any)?.total ?? 0,
         },
         finishReason: this.mapFinishReason(result.finishReason),
       }
@@ -109,11 +108,11 @@ export class OllamaProvider implements LLMProvider {
 
     try {
       const result = streamText({
-        model,
+        model: model as any, // Type cast for compatibility
         messages: request.messages,
         temperature: request.temperature ?? 0.3,
-        maxTokens: request.maxTokens ?? 2048,
-      })
+        maxOutputTokens: request.maxTokens ?? 2048,
+      } as any)
 
       for await (const chunk of result.textStream) {
         yield { content: chunk, done: false }
@@ -160,7 +159,7 @@ export class OllamaProvider implements LLMProvider {
       const response = await fetch(`${this.baseUrl}/api/tags`)
       if (!response.ok) return []
 
-      const data = await response.json()
+      const data: any = await response.json()
       return data.models?.map((m: any) => m.name) ?? []
     } catch {
       return []

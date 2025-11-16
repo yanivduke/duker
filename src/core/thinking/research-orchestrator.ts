@@ -304,8 +304,8 @@ Suggest specific, actionable follow-up questions. Format as a simple list.`;
 
       return response.text
         .split('\n')
-        .filter(line => line.trim().length > 0)
-        .map(line => line.replace(/^[-*•]\s*/, '').trim())
+        .filter((line: string) => line.trim().length > 0)
+        .map((line: string) => line.replace(/^[-*•]\s*/, '').trim())
         .slice(0, 3);
     } catch (error) {
       console.error('Follow-up generation failed:', error);

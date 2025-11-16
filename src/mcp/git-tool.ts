@@ -248,7 +248,7 @@ export class GitTool implements MCPTool {
     path: string,
     limit: number = 10
   ): Promise<GitCommit[]> {
-    const log: LogResult = await this.git.log({
+    const log: any = await this.git.log({
       file: path,
       maxCount: limit,
       format: {
@@ -259,7 +259,7 @@ export class GitTool implements MCPTool {
       },
     })
 
-    return log.all.map((commit) => ({
+    return log.all.map((commit: any) => ({
       hash: commit.hash,
       author: commit.author_name || '',
       date: commit.date,

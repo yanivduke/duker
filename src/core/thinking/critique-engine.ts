@@ -194,8 +194,8 @@ List only critical issues (security, correctness, performance). Be concise.`;
 
     return response.text
       .split('\n')
-      .filter(line => line.trim().length > 0)
-      .map(line => line.replace(/^[-*•]\s*/, '').trim());
+      .filter((line: string) => line.trim().length > 0)
+      .map((line: string) => line.replace(/^[-*•]\s*/, '').trim());
   }
 
   /**
@@ -227,8 +227,8 @@ Provide 3-5 specific, actionable improvements. Be concrete and technical.`;
 
     return response.text
       .split('\n')
-      .filter(line => line.trim().length > 0)
-      .map(line => line.replace(/^[-*•]\d+\.\s*/, '').trim());
+      .filter((line: string) => line.trim().length > 0)
+      .map((line: string) => line.replace(/^[-*•]\d+\.\s*/, '').trim());
   }
 
   /**

@@ -134,7 +134,10 @@ Be precise and efficient in your tool use.`,
   private createZodSchema(tool: MCPTool): z.ZodObject<any> {
     const shape: Record<string, z.ZodTypeAny> = {}
 
-    for (const [paramName, paramDef] of Object.entries(tool.schema.parameters)) {
+    // Support both 'parameters' and 'properties' (JSON Schema format)
+    const params = tool.schema.parameters || tool.schema.properties || {}
+
+    for (const [paramName, paramDef] of Object.entries(params)) {
       let zodType: z.ZodTypeAny
 
       switch (paramDef.type) {

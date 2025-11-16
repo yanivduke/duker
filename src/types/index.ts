@@ -75,7 +75,9 @@ export interface MCPTool {
 }
 
 export interface ToolSchema {
-  parameters: Record<string, ParameterDef>
+  type?: string // JSON Schema type (usually 'object')
+  parameters?: Record<string, ParameterDef> // Legacy format
+  properties?: Record<string, ParameterDef> // JSON Schema format
   required: string[]
 }
 
@@ -215,6 +217,7 @@ export type AgenticPattern =
   | 'reflection'
   | 'tool-use'
   | 'react'
+  | 'react-local'
   | 'planning'
   | 'multi-agent'
 
@@ -254,7 +257,9 @@ export interface AgentResponse {
     tokensUsed?: number
     duration?: number
     finalQuality?: number
+    finalConfidence?: number
     agentsUsed?: string[]
+    [key: string]: any // Allow additional metadata fields
   }
   error?: string
   userCancelled?: boolean

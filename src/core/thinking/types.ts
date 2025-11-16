@@ -77,28 +77,28 @@ export interface CritiqueResult {
 }
 
 export interface IterationConfig {
-  maxThinkingTokens: number;     // Default: 10000
-  maxCycles: number;             // Default: 20
-  maxDuration: number;           // Default: 300s (5 min)
+  maxThinkingTokens?: number;     // Default: 10000
+  maxCycles?: number;             // Default: 20
+  maxDuration?: number;           // Default: 300s (5 min)
 
   // Quality thresholds
-  minConfidence: number;         // Default: 0.85
-  minQuality: number;            // Default: 0.90
+  minConfidence?: number;         // Default: 0.85
+  minQuality?: number;            // Default: 0.90
 
   // Improvement tracking
-  minImprovement: number;        // Default: 0.05 (5%)
-  stalledCycles: number;         // Default: 3
+  minImprovement?: number;        // Default: 0.05 (5%)
+  stalledCycles?: number;         // Default: 3
 
   // Early stopping
-  earlyStopConfidence: number;   // Default: 0.95 (stop early if very confident)
+  earlyStopConfidence?: number;   // Default: 0.95 (stop early if very confident)
 
   // Tool augmentation
-  enableWebSearch: boolean;      // Auto-trigger web searches
-  enableCodebaseContext: boolean; // Auto-retrieve codebase context
+  enableWebSearch?: boolean;      // Auto-trigger web searches
+  enableCodebaseContext?: boolean; // Auto-retrieve codebase context
 
   // Transparency
-  showThinkingSteps: boolean;    // Display thinking to user
-  thinkingVisibility: 'none' | 'summary' | 'full';
+  showThinkingSteps?: boolean;    // Display thinking to user
+  thinkingVisibility?: 'none' | 'summary' | 'full';
 }
 
 export type StoppingReason =
