@@ -157,13 +157,18 @@ export class RAGTool implements MCPTool {
 
   private async listCollections(): Promise<string[]> {
     const collections = await this.client.listCollections()
-    return collections.map((c) => c.name)
+    // ChromaDB returns an array of collection objects or strings depending on version
+    return collections.map((c: any) => (typeof c === 'string' ? c : c.name))
   }
 
   private async getCollection(name: string): Promise<Collection> {
     if (!this.collections.has(name)) {
       try {
-        const collection = await this.client.getCollection({ name })
+        // ChromaDB v1.8+ requires embeddingFunction parameter
+        const collection = await this.client.getCollection({
+          name,
+          embeddingFunction: undefined as any, // Use default embedding function
+        })
         this.collections.set(name, collection)
       } catch {
         // Collection doesn't exist, create it

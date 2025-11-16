@@ -112,7 +112,7 @@ export class ExtendedThinkingEngine {
       state.currentConfidence = critique.overallConfidence;
       state.lastImprovement = critique.improvement ?? 0;
 
-      if (state.lastImprovement < this.options.config.minImprovement) {
+      if (state.lastImprovement < (this.options.config.minImprovement ?? 0.05)) {
         state.cyclesSinceImprovement++;
       } else {
         state.cyclesSinceImprovement = 0;
@@ -150,7 +150,7 @@ export class ExtendedThinkingEngine {
         this.stepManager.complete();
 
         return {
-          solution: currentSolution,
+          solution: currentSolution as T,
           quality: state.currentQuality,
           confidence: state.currentConfidence,
           iterations: state.cycle + 1,

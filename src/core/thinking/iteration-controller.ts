@@ -13,8 +13,11 @@ import {
   CritiqueResult,
 } from './types';
 
+// Internal type for fully populated config with all required fields
+type ResolvedIterationConfig = Required<IterationConfig>;
+
 export class IterationController {
-  private config: IterationConfig;
+  private config: ResolvedIterationConfig;
   private qualityHistory: number[] = [];
   private confidenceHistory: number[] = [];
 
@@ -214,7 +217,7 @@ export class IterationController {
   /**
    * Get configuration
    */
-  getConfig(): IterationConfig {
+  getConfig(): ResolvedIterationConfig {
     return { ...this.config };
   }
 

@@ -95,11 +95,12 @@ export class ReActAgentLocal {
     }
 
     return {
-      result: finalAnswer || 'Task incomplete - max steps reached',
+      success: complete,
+      output: finalAnswer || 'Task incomplete - max steps reached',
       metadata: {
+        agent: 'react-local',
         pattern: 'react-local',
-        steps: this.history.length,
-        complete,
+        iterations: this.history.length,
         toolsUsed: this.history.filter((h) => h.action).map((h) => h.action!),
       },
     }
@@ -283,5 +284,5 @@ export async function runReActLocal(
 
   const response = await agent.execute({ task }, config)
 
-  return response.result
+  return response.output
 }

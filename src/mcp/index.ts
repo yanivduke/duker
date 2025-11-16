@@ -7,3 +7,11 @@ export { ContextTool } from './context-tool.js'
 export { WebSearchTool } from './web-search-tool.js'
 export { MemoryTool } from './memory-tool.js'
 export { VisionTool } from './vision-tool.js'
+
+// Re-export types from types/index.ts for convenience
+export type {
+  MCPTool,
+  ToolSchema,
+  ToolResult,
+  ParameterDef,
+} from '../types/index.js'
